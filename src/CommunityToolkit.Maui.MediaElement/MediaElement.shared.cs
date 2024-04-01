@@ -446,7 +446,6 @@ public class MediaElement : View, IMediaElement, IDisposable
 
 		if (disposing)
 		{
-			ClearTimer();
 			seekToSemaphoreSlim.Dispose();
 		}
 
@@ -579,4 +578,71 @@ public class MediaElement : View, IMediaElement, IDisposable
 	void OnPositionRequested() => eventManager.HandleEvent(this, EventArgs.Empty, nameof(PositionRequested));
 
 	void OnUpdateStatus() => eventManager.HandleEvent(this, EventArgs.Empty, nameof(StatusUpdated));
+
+
+	//New
+	/// <summary>
+	/// Backing store for the <see cref="CustomHeaders"/> property.
+	/// </summary>
+	public static readonly BindableProperty CustomHeadersProperty =
+		  BindableProperty.Create(nameof(CustomHeaders), typeof(Dictionary<string, string>), typeof(MediaElement), null);
+
+	/// <summary>
+	/// Backing store for the <see cref="MinBufferDuration"/> property.
+	/// </summary>
+	public static readonly BindableProperty MinBufferDurationProperty =
+		BindableProperty.Create(nameof(MinBufferDuration), typeof(int), typeof(MediaElement), 3000);
+
+	/// <summary>
+	/// Backing store for the <see cref="MaxBufferDuration"/> property.
+	/// </summary>
+	public static readonly BindableProperty MaxBufferDurationProperty =
+		BindableProperty.Create(nameof(MaxBufferDuration), typeof(int), typeof(MediaElement), 8000);
+
+	/// <summary>
+	/// Backing store for the <see cref="MinPlaybackResumeBuffer"/> property.
+	/// </summary>
+	public static readonly BindableProperty MinPlaybackResumeBufferProperty =
+		BindableProperty.Create(nameof(MinPlaybackResumeBuffer), typeof(int), typeof(MediaElement), 1500);
+
+	/// <summary>
+	/// Backing store for the <see cref="MinPlaybackStartBuffer"/> property.
+	/// </summary>
+	public static readonly BindableProperty MinPlaybackStartBufferProperty =
+		BindableProperty.Create(nameof(MinPlaybackStartBuffer), typeof(int), typeof(MediaElement), 500);
+
+	/// <inheritdoc cref="IMediaElement.CustomHeaders"/>
+	public Dictionary<string, string> CustomHeaders
+	{
+		get => (Dictionary<string, string>)GetValue(CustomHeadersProperty);
+		set => SetValue(CustomHeadersProperty, value);
+	}
+
+	/// <inheritdoc cref="IMediaElement.MinBufferDuration"/>
+	public int MinBufferDuration
+	{
+		get => (int)GetValue(MinBufferDurationProperty);
+		set => SetValue(MinBufferDurationProperty, value);
+	}
+
+	/// <inheritdoc cref="IMediaElement.MaxBufferDuration"/>
+	public int MaxBufferDuration
+	{
+		get => (int)GetValue(MaxBufferDurationProperty);
+		set => SetValue(MaxBufferDurationProperty, value);
+	}
+
+	/// <inheritdoc cref="IMediaElement.MinPlaybackResumeBuffer"/>
+	public int MinPlaybackResumeBuffer
+	{
+		get => (int)GetValue(MinPlaybackResumeBufferProperty);
+		set => SetValue(MinPlaybackResumeBufferProperty, value);
+	}
+
+	/// <inheritdoc cref="IMediaElement.MinPlaybackStartBuffer"/>
+	public int MinPlaybackStartBuffer
+	{
+		get => (int)GetValue(MinPlaybackStartBufferProperty);
+		set => SetValue(MinPlaybackStartBufferProperty, value);
+	}
 }

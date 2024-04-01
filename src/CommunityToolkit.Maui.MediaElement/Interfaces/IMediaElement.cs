@@ -146,4 +146,29 @@ public interface IMediaElement : IView, IAsynchronousMediaElementHandler
 	/// </summary>
 	/// <param name="newState">The new state the <see cref="MediaElement"/> transitioned to.</param>
 	internal void CurrentStateChanged(MediaElementState newState);
+
+	/// <summary>
+	/// Gets or sets headers custom headers
+	/// </summary>
+	Dictionary<string,string> CustomHeaders { get; set; }
+
+	/// <summary>
+	/// The minimum duration of media that the player will attempt to ensure is buffered at all times, in milliseconds. Default: 3000
+	/// </summary>
+	int MinBufferDuration { get; set; }
+
+	/// <summary>
+	/// The maximum duration of media that the player will attempt to buffer, in milliseconds. Default: 8000
+	/// </summary>
+	int MaxBufferDuration { get; set; }
+
+	/// <summary>
+	/// The duration of media that must be buffered for playback to start or resume following a user action such as a seek, in milliseconds Default: 1500
+	/// </summary>
+	int MinPlaybackResumeBuffer { get; set; }
+
+	/// <summary>
+	/// The default duration of media that must be buffered for playback to resume after a rebuffer, in milliseconds. A rebuffer is defined to be caused by buffer depletion rather than a user action Default: 500
+	/// </summary>
+	int MinPlaybackStartBuffer { get; set; }
 }

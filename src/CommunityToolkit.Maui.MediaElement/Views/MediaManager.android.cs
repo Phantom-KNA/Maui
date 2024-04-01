@@ -1,15 +1,24 @@
+
 ﻿using Android.Support.V4.Media.Session;
 using Android.Views;
 using Android.Widget;
 using AndroidX.CoordinatorLayout.Widget;
+﻿using System.Net.Http;
+using Android.Support.V4.Media.Session;
+using Android.Widget;
+using Bumptech.Glide.Load.Model;
 using Com.Google.Android.Exoplayer2;
 using Com.Google.Android.Exoplayer2.Audio;
 using Com.Google.Android.Exoplayer2.Metadata;
+using Com.Google.Android.Exoplayer2.Source;
 using Com.Google.Android.Exoplayer2.Text;
 using Com.Google.Android.Exoplayer2.Trackselection;
 using Com.Google.Android.Exoplayer2.UI;
+using Com.Google.Android.Exoplayer2.Upstream;
+using Com.Google.Android.Exoplayer2.Upstream.Cache;
 using Com.Google.Android.Exoplayer2.Video;
 using CommunityToolkit.Maui.Core.Primitives;
+using CommunityToolkit.Maui.Tags;
 using CommunityToolkit.Maui.Views;
 using Microsoft.Extensions.Logging;
 
@@ -36,8 +45,15 @@ public partial class MediaManager : Java.Lang.Object, IPlayer.IListener
 	/// <exception cref="NullReferenceException">Thrown when <see cref="Android.Content.Context"/> is <see langword="null"/> or when the platform view could not be created.</exception>
 	public (PlatformMediaElement platformView, StyledPlayerView PlayerView) CreatePlatformView()
 	{
+		ILoadControl? iloadControl = new DefaultLoadControl.Builder()?
+			.SetAllocator(new DefaultAllocator(true, 16))?
+			.SetBufferDurationsMs(MediaElement.MinBufferDuration, MediaElement.MaxBufferDuration, MediaElement.MinPlaybackResumeBuffer, MediaElement.MinPlaybackStartBuffer)?
+			.SetTargetBufferBytes(-1)?
+			.SetPrioritizeTimeOverSizeThresholds(true)?
+			.Build();
+
 		ArgumentNullException.ThrowIfNull(MauiContext.Context);
-		Player = new IExoPlayer.Builder(MauiContext.Context).Build() ?? throw new NullReferenceException();
+		Player = new IExoPlayer.Builder(MauiContext.Context).SetLoadControl(iloadControl)?.Build() ?? throw new NullReferenceException();
 		Player.AddListener(this);
 
 		PlayerView = new StyledPlayerView(MauiContext.Context)
@@ -321,10 +337,29 @@ public partial class MediaManager : Java.Lang.Object, IPlayer.IListener
 			var uri = uriMediaSource.Uri;
 			if (!string.IsNullOrWhiteSpace(uri?.AbsoluteUri))
 			{
-				Player.SetMediaItem(MediaItem.FromUri(uri.AbsoluteUri));
-				Player.Prepare();
+				if (MediaElement.CustomHeaders != null)
+				{
+					var httpDataSoureFactory = new DefaultHttpDataSource.Factory();
+					httpDataSoureFactory.SetDefaultRequestProperties(MediaElement.CustomHeaders);
+					httpDataSoureFactory.SetUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0");
+					var simpleCache = VideoCache.GetInstance(context: MauiContext.Context);
 
-				hasSetSource = true;
+					//var cacheFactory = new CacheDataSource.Factory();
+					//cacheFactory.SetCache(simpleCache);
+					//cacheFactory.SetUpstreamDataSourceFactory(dataSourceFactory);
+
+					var mediaSource = new DefaultMediaSourceFactory(httpDataSoureFactory).CreateMediaSource(MediaItem.FromUri(uri?.AbsoluteUri));
+					Player.SetMediaSource(mediaSource);
+					Player.Prepare();
+					hasSetSource = true;
+				}
+				else
+				{
+					Player.SetMediaItem(MediaItem.FromUri(uri.AbsoluteUri));
+					Player.Prepare();
+					
+					hasSetSource = true;
+				}
 			}
 		}
 		else if (MediaElement.Source is FileMediaSource fileMediaSource)
