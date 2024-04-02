@@ -18,7 +18,6 @@ using Com.Google.Android.Exoplayer2.Upstream;
 using Com.Google.Android.Exoplayer2.Upstream.Cache;
 using Com.Google.Android.Exoplayer2.Video;
 using CommunityToolkit.Maui.Core.Primitives;
-using CommunityToolkit.Maui.Tags;
 using CommunityToolkit.Maui.Views;
 using Microsoft.Extensions.Logging;
 
@@ -342,7 +341,7 @@ public partial class MediaManager : Java.Lang.Object, IPlayer.IListener
 					var httpDataSoureFactory = new DefaultHttpDataSource.Factory();
 					httpDataSoureFactory.SetDefaultRequestProperties(MediaElement.CustomHeaders);
 					httpDataSoureFactory.SetUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0");
-					var simpleCache = VideoCache.GetInstance(context: MauiContext.Context);
+					//var simpleCache = VideoCache.GetInstance(context: MauiContext.Context);
 
 					//var cacheFactory = new CacheDataSource.Factory();
 					//cacheFactory.SetCache(simpleCache);

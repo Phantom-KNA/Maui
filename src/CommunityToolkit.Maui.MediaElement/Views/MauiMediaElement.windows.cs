@@ -41,6 +41,7 @@ public class MauiMediaElement : Grid, IDisposable
 	public MauiMediaElement(MediaPlayerElement mediaPlayerElement)
 	{
 		this.mediaPlayerElement = mediaPlayerElement;
+		
 
 		fullScreenButton = new Button
 		{
@@ -200,6 +201,61 @@ public class MauiMediaElement : Grid, IDisposable
 			{
 				popup.IsOpen = true;
 			}
+		}
+	}
+
+	/// <summary>
+	/// Enter FullScreen Windows.
+	/// </summary>
+	public void EnterFullScreen()
+	{
+		var currentPage = CurrentPage;
+
+		if (appWindow.Presenter.Kind is AppWindowPresenterKind.FullScreen)
+		{
+			appWindow.SetPresenter(AppWindowPresenterKind.Default);
+			Shell.SetNavBarIsVisible(CurrentPage, doesNavigationBarExistBeforeFullScreen);
+
+			/*if (popup.IsOpen)
+			{
+				popup.IsOpen = false;
+				popup.Child = null;
+				fullScreenGrid.Children.Clear();
+			}*/
+
+			//Children.Add(mediaPlayerElement);
+			//Children.Add(buttonContainer);
+
+			var parent = mediaPlayerElement.Parent as FrameworkElement;
+			mediaPlayerElement.Width = parent?.Width ?? mediaPlayerElement.Width;
+			mediaPlayerElement.Height = parent?.Height ?? mediaPlayerElement.Height;
+		}
+		else
+		{
+			appWindow.SetPresenter(AppWindowPresenterKind.FullScreen);
+			doesNavigationBarExistBeforeFullScreen = Shell.GetNavBarIsVisible(currentPage);
+			Shell.SetNavBarIsVisible(CurrentPage, false);
+
+			var displayInfo = DeviceDisplay.Current.MainDisplayInfo;
+			mediaPlayerElement.Width = displayInfo.Width / displayInfo.Density;
+			mediaPlayerElement.Height = displayInfo.Height / displayInfo.Density;
+
+			/*Children.Clear();
+			fullScreenGrid.Children.Add(mediaPlayerElement);
+			fullScreenGrid.Children.Add(buttonContainer);
+
+			popup.XamlRoot = mediaPlayerElement.XamlRoot;
+			popup.HorizontalOffset = 0;
+			popup.VerticalOffset = 0;
+			popup.ShouldConstrainToRootBounds = false;
+			popup.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+			popup.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center;
+			popup.Child = fullScreenGrid;
+
+			if (!popup.IsOpen)
+			{
+				popup.IsOpen = true;
+			}*/
 		}
 	}
 }
